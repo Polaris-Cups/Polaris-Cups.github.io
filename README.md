@@ -1,1 +1,0 @@
-# Polaris-Cups.github.io
