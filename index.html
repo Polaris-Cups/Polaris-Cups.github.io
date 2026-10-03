@@ -1,0 +1,2214 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="scroll-smooth bg-paper">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>CUPS — Software Engineering by Polaris</title>
+    <meta
+      name="description"
+      content="Cups is the software engineering team of Polaris: full-stack web and APIs, scalable platforms and applied machine learning."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Jost:wght@300;400;500&family=Vazirmatn:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/webp" href="public/logo.webp" />
+    <meta name="theme-color" content="#050b1a" />
+    <meta
+      property="og:title"
+      content="CUPS — Software Engineering by Polaris"
+    />
+    <meta
+      property="og:description"
+      content="An engineering team building considered web, platform and AI products."
+    />
+    <meta property="og:image" content="public/cups-original-transparent.webp" />
+
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script>
+      window.tailwind = window.tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: "var(--bg-0)",
+              panel: "var(--bg-2)",
+              ink: "var(--txt)",
+              "ink-2": "var(--txt-2)",
+              title: "var(--title)",
+              gold: "var(--gold)",
+              "gold-soft": "var(--gold-soft)",
+              line: "var(--line)",
+              "line-soft": "var(--line-soft)",
+            },
+            fontFamily: {
+              sans: ["Jost", "Helvetica Neue", "Arial", "sans-serif"],
+              serif: ["Cormorant Garamond", "Garamond", "serif"],
+              fa: ["Vazirmatn Local", "Vazirmatn", "Tahoma", "sans-serif"],
+            },
+            keyframes: {
+              bob: {
+                "0%, 100%": { transform: "translateY(-3px)", opacity: ".55" },
+                "50%": { transform: "translateY(3px)", opacity: "1" },
+              },
+            },
+            animation: { bob: "bob 2.6s ease-in-out infinite" },
+          },
+        },
+      };
+    </script>
+
+    <!-- Only rules Tailwind cannot express: theme tokens, RTL font swapping, motion preferences. -->
+    <style>
+      :root {
+        --bg-0: #050b1a;
+        --bg-1: #081327;
+        --bg-2: #0b1834;
+        --txt: #e8e6f0;
+        --txt-2: #bfc4d6;
+        --title: #d6cff4;
+        --h1-1: #dad3f7;
+        --h1-2: #a996ff;
+        --gold: #c7a56a;
+        --gold-soft: #e4ce9c;
+        --line: rgba(199, 165, 106, 0.22);
+        --line-soft: rgba(199, 165, 106, 0.13);
+        --halo: rgba(110, 99, 201, 0.2);
+        --tint: rgba(141, 122, 230, 0.07);
+        --hover-line: rgba(199, 165, 106, 0.45);
+        --hdr-bg: rgba(5, 11, 26, 0.82);
+        --menu-bg: rgba(8, 15, 33, 0.94);
+        color-scheme: dark;
+      }
+      [data-theme="light"] {
+        --bg-0: #f3ecdf;
+        --bg-1: #fbf7ef;
+        --bg-2: #ece3d2;
+        --txt: #2a2438;
+        --txt-2: #45404f;
+        --title: #4b3f86;
+        --h1-1: #6e5fc9;
+        --h1-2: #8d7ae6;
+        --gold: #9a7b33;
+        --gold-soft: #b9954a;
+        --line: rgba(154, 123, 51, 0.3);
+        --line-soft: rgba(154, 123, 51, 0.18);
+        --halo: rgba(199, 165, 106, 0.22);
+        --tint: rgba(154, 123, 51, 0.07);
+        --hover-line: rgba(154, 123, 51, 0.5);
+        --hdr-bg: rgba(243, 237, 223, 0.85);
+        --menu-bg: rgba(251, 247, 239, 0.96);
+        color-scheme: light;
+      }
+      @font-face {
+        font-family: "Vazirmatn Local";
+        src: url("public/Vazirmatn-Regular.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* Theme tokens and decorative elements stay in CSS; layouts live in Tailwind classes. */
+      [lang="fa"] body,
+      [lang="fa"] button,
+      [lang="fa"] input,
+      [lang="fa"] .font-serif,
+      [lang="fa"] .font-sans,
+      [lang="fa"] .hero-lede {
+        font-family:
+          "Vazirmatn Local", Vazirmatn, Tahoma, sans-serif !important;
+      }
+      [lang="fa"] .hero-title {
+        font-family: "Cormorant Garamond", Georgia, serif !important;
+        direction: ltr;
+      }
+      [lang="fa"] * {
+        letter-spacing: normal !important;
+      }
+      [lang="fa"] .hero-actions a {
+        font-size: 14px !important;
+        line-height: 1.6;
+      }
+      [lang="fa"] .hero-lede {
+        font-size: clamp(20px, 2.2vw, 27px);
+        line-height: 1.75;
+      }
+      :focus-visible {
+        outline: 2px solid var(--gold-soft);
+        outline-offset: 4px;
+      }
+      html {
+        scroll-padding-top: 90px;
+      }
+      ::selection {
+        background: #a996ff;
+        color: #050b1a;
+      }
+      #home::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background:
+          radial-gradient(
+            ellipse 44% 45% at 72% 41%,
+            rgba(139, 112, 232, 0.16),
+            transparent 78%
+          ),
+          linear-gradient(115deg, transparent 55%, rgba(199, 165, 106, 0.035));
+        pointer-events: none;
+      }
+      .hero-visual::before {
+        content: "";
+        position: absolute;
+        width: min(94%, 530px);
+        aspect-ratio: 1;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 34px rgba(199, 165, 106, 0.025),
+          0 0 0 88px rgba(199, 165, 106, 0.018),
+          inset 0 0 90px rgba(110, 99, 201, 0.09);
+      }
+      .hero-visual::after {
+        content: "";
+        position: absolute;
+        width: min(75%, 415px);
+        aspect-ratio: 1;
+        border: 1px dashed var(--line);
+        border-radius: 50%;
+        animation: orbit 70s linear infinite;
+      }
+      .hero-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: var(--gold);
+      }
+      .hero-cup {
+        animation: levitate 8s ease-in-out infinite;
+      }
+      @keyframes levitate {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+      @keyframes orbit {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #works .work > div:first-child::after {
+        content: "↗";
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        background: var(--gold);
+        color: #11152b;
+        border-radius: 50%;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.3s,
+          transform 0.3s;
+      }
+      #works .work:hover > div:first-child::after {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      @media (max-width: 760px) {
+        .hero-visual::before {
+          width: min(72vw, 330px);
+        }
+        .hero-visual::after {
+          width: min(55vw, 255px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition-duration: 0.01ms !important;
+        }
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+
+    <!-- Repeating patterns, built from Tailwind utilities. -->
+    <style type="text/tailwindcss">
+      @layer components {
+        .wrap {
+          @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-16;
+        }
+        .sect {
+          @apply py-[clamp(64px,10vh,132px)];
+        }
+        .label {
+          @apply text-[9.5px] uppercase tracking-[.26em];
+        }
+        .rule {
+          @apply h-px flex-1 bg-gradient-to-r from-transparent via-[var(--line)] to-transparent;
+        }
+        .nav-link {
+          @apply text-ink-2 transition-colors duration-500 hover:text-ink;
+        }
+        .nav-link.is-on {
+          @apply text-gold-soft;
+        }
+        .lang-item {
+          @apply rounded px-3 py-2 text-start text-[12px] tracking-[.06em] text-[var(--menu-text)] transition-colors duration-300 hover:bg-[var(--tint)] hover:text-ink;
+        }
+        .lang-item.is-on {
+          @apply font-medium text-gold;
+        }
+        .chip {
+          @apply rounded border border-line bg-[var(--tint)] px-3 py-2 text-[9.5px] uppercase tracking-[.16em] text-ink-2;
+        }
+        .icon-btn {
+          @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-gold transition duration-500 hover:border-[var(--hover-line)] hover:bg-[var(--tint)];
+        }
+        .icon-btn:disabled {
+          @apply cursor-default opacity-30;
+        }
+        .icon-btn:disabled:hover {
+          @apply border-line bg-transparent;
+        }
+        .dot {
+          @apply h-[7px] w-[7px] rounded-full bg-line transition duration-300;
+        }
+        .dot.is-on {
+          @apply scale-125 bg-gold;
+        }
+        .filter-btn {
+          @apply relative px-1 py-2 text-[12px] leading-[1.5] tracking-[.2em] text-ink-2 transition-colors duration-300 hover:text-ink;
+        }
+        .filter-btn.is-on {
+          @apply text-gold-soft;
+        }
+        .filter-btn.is-on::after {
+          content: "";
+          @apply absolute inset-x-0 -bottom-[19px] h-px bg-gold opacity-75;
+        }
+        .no-anim {
+          transition: none !important;
+        }
+        .rv {
+          @apply translate-y-3 opacity-0 transition duration-700 ease-out;
+        }
+        .rv.in {
+          @apply translate-y-0 opacity-100;
+        }
+      }
+    </style>
+    <!--
+      Shared data and helpers. All of it is used by more than one section
+      (team grid, works slider, member modal and the page-wide language switch),
+      so it lives here at the top next to the other scripts and links.
+    -->
+    <script>
+      window.POLARIS = (function () {
+        "use strict";
+
+        var I18N = {
+          en: {
+            nav_members: "MEMBERS",
+            hero_eyebrow: "A POLARIS ENGINEERING COLLECTIVE",
+            hero_work: "Explore our work",
+            hero_team: "Meet the team",
+            hero_foot: "ENGINEERED WITH INTENTION",
+            hero_scroll: "SCROLL TO EXPLORE",
+            hero_image: "Illustrated watercolor chalice, the Cups team emblem",
+            visit_project: "VISIT PROJECT",
+            nav_works: "WORKS",
+            nav_about: "ABOUT",
+            hero_sub: "THE SOFTWARE ENGINEERING TEAM OF POLARIS",
+            hero_lede:
+              "Four engineers, one standard: software that holds up in production.",
+            scroll_cue: "Scroll to the team",
+            team_title: "THE TEAM",
+            team_sub: "The engineers of Cups",
+            works_title: "WORKS",
+            works_sub: "Systems designed, built and shipped by Cups",
+            about_title: "ABOUT",
+            about_lede:
+              "Cups is the engineering team of Polaris, a software development company built on experienced engineers.",
+            about_body1:
+              "Polaris works for clients who cannot afford guesswork. Our engineers own the whole delivery: architecture, code, review, release and the maintenance that follows. Nothing important is left to chance.",
+            about_body2:
+              "Cups brings together the disciplines that decide whether a product survives contact with real users: full-stack web and API development, scalable platform engineering, and applied machine learning. Every work below was designed, built and measured by this team.",
+            about_body3:
+              "We work in the open: a clear scope, visible progress, and code our clients can take over at any moment.",
+            com1_t: "OWNERSHIP",
+            com1_d:
+              "The engineer who builds a system answers for it in production, long after the demo.",
+            com2_t: "CRAFT",
+            com2_d:
+              "Review, tests and measured performance are part of the definition of done.",
+            com3_t: "CONTINUITY",
+            com3_d:
+              "Documentation and handover ship with the product instead of being promised later.",
+            meta_team: "TEAM",
+            meta_team_v: "Cups · 4 engineers",
+            meta_company: "COMPANY",
+            meta_company_v: "Polaris",
+            meta_disciplines: "DISCIPLINES",
+            meta_disciplines_v: "Web · Platform · AI",
+            meta_works: "SHIPPED WORKS",
+            meta_works_v: "8 projects",
+            modal_about: "ABOUT",
+            modal_expertise: "EXPERTISE",
+            modal_works: "SELECTED WORKS",
+            modal_more:
+              "Also works across every shared project in this archive.",
+            modal_close: "Close profile",
+            foot_tag: "SOFTWARE ENGINEERING · POLARIS",
+            theme: "Toggle theme",
+            lang: "Change language",
+            menu: "Open menu",
+            cat: {
+              ALL: "ALL",
+              BACKEND: "BACKEND",
+              FRONTEND: "FRONTEND",
+              WEB: "WEB",
+              SCALABLE: "SCALABLE",
+              AI: "AI",
+            },
+          },
+          ru: {
+            nav_members: "УЧАСТНИКИ",
+            hero_eyebrow: "ИНЖЕНЕРНАЯ КОМАНДА POLARIS",
+            hero_work: "Наши работы",
+            hero_team: "Наша команда",
+            hero_foot: "СОЗДАНО С ЗАБОТОЙ О ДЕТАЛЯХ",
+            hero_scroll: "ЛИСТАЙТЕ ДАЛЬШЕ",
+            hero_image: "Акварельный кубок — символ команды Cups",
+            visit_project: "ОТКРЫТЬ ПРОЕКТ",
+            nav_works: "РАБОТЫ",
+            nav_about: "О НАС",
+            hero_sub: "ИНЖЕНЕРНАЯ КОМАНДА ПОЛЯРИС",
+            hero_lede:
+              "Четыре инженера и один стандарт: код, который держится в продакшене.",
+            scroll_cue: "Перейти к команде",
+            team_title: "КОМАНДА",
+            team_sub: "Инженеры Cups",
+            works_title: "РАБОТЫ",
+            works_sub: "Системы, спроектированные, созданные и выпущенные Cups",
+            about_title: "О НАС",
+            about_lede:
+              "Cups — инженерная команда Polaris, компании по разработке ПО, где всё строится на опытных инженерах.",
+            about_body1:
+              "Polaris работает для клиентов, которым нельзя позволить догадки. Наши инженеры отвечают за весь путь: архитектуру, код, ревью, релиз и последующую поддержку. Ничего важного не отдаётся на волю случая.",
+            about_body2:
+              "Cups объединяет дисциплины, которые определяют, выживет ли продукт при встрече с реальными пользователями: фуллстек-разработку веба и API, масштабируемую платформенную инженерию и прикладное машинное обучение. Каждая работа ниже спроектирована, реализована и измерена этой командой.",
+            about_body3:
+              "Мы работаем открыто: понятный объём, видимый прогресс и код, который клиент может забрать в любой момент.",
+            com1_t: "ОТВЕТСТВЕННОСТЬ",
+            com1_d:
+              "Инженер, который построил систему, отвечает за неё в продакшене — не только на демо.",
+            com2_t: "КАЧЕСТВО",
+            com2_d:
+              "Ревью, тесты и измеряемая производительность входят в определение готовности.",
+            com3_t: "ПРЕЕМСТВЕННОСТЬ",
+            com3_d:
+              "Документация и передача проекта идут вместе с продуктом, а не обещаются позже.",
+            meta_team: "КОМАНДА",
+            meta_team_v: "Cups · 4 инженера",
+            meta_company: "КОМПАНИЯ",
+            meta_company_v: "Polaris",
+            meta_disciplines: "ДИСЦИПЛИНЫ",
+            meta_disciplines_v: "Веб · Платформа · ИИ",
+            meta_works: "ВЫПУЩЕНО РАБОТ",
+            meta_works_v: "8 проектов",
+            modal_about: "ОБ ИНЖЕНЕРЕ",
+            modal_expertise: "ЭКСПЕРТИЗА",
+            modal_works: "ИЗБРАННЫЕ РАБОТЫ",
+            modal_more: "Также участвует в каждом общем проекте этого архива.",
+            modal_close: "Закрыть профиль",
+            foot_tag: "РАЗРАБОТКА ПО · POLARIS",
+            theme: "Переключить тему",
+            lang: "Сменить язык",
+            menu: "Открыть меню",
+            cat: {
+              ALL: "ВСЕ",
+              BACKEND: "БЭКЕНД",
+              FRONTEND: "FRONTEND",
+              WEB: "ВЕБ",
+              SCALABLE: "МАСШТАБ",
+              AI: "ИИ",
+            },
+          },
+          fa: {
+            nav_members: "اعضا",
+            hero_eyebrow: "گروه مهندسی پولاریس",
+            hero_work: "تماشای آثار",
+            hero_team: "آشنایی با تیم",
+            hero_foot: "مهندسی با دقت و هدف",
+            hero_scroll: "برای دیدن بیشتر",
+            hero_image: "تصویر آبرنگی جام، نشان تیم جام‌ها",
+            visit_project: "مشاهده پروژه",
+            nav_works: "آثار",
+            nav_about: "درباره",
+            hero_sub: "تیم مهندسی نرم‌افزار پولاریس",
+            hero_lede:
+              "چهار مهندس، یک استاندارد: نرم‌افزاری که در محیط واقعی دوام می‌آورد.",
+            scroll_cue: "رفتن به تیم",
+            team_title: "تیم",
+            team_sub: "مهندسان جام‌ها",
+            works_title: "آثار",
+            works_sub: "سیستم‌هایی که جام‌ها طراحی، ساخته و تحویل داده است",
+            about_title: "درباره",
+            about_lede:
+              "جام‌ها تیم مهندسی پولاریس است؛ شرکتی در حوزهٔ توسعهٔ نرم‌افزار که بنیادش بر مهندسان باتجربه است.",
+            about_body1:
+              "پولاریس برای کارفرمایانی کار می‌کند که جای آزمون‌وخطا ندارند. مهندسان ما مسئولیت کل مسیر را می‌پذیرند: معماری، کدنویسی، بازبینی، انتشار و نگهداشت پس از آن. هیچ بخش مهمی به شانس سپرده نمی‌شود.",
+            about_body2:
+              "جام‌ها تخصص‌هایی را کنار هم آورده که تعیین می‌کنند یک محصول در رویارویی با کاربران واقعی دوام می‌آورد یا نه: توسعهٔ فول‌استک وب و ای‌پی‌آی، مهندسی پلتفرم‌های مقیاس‌پذیر و یادگیری ماشین کاربردی. هر اثر زیر توسط همین تیم طراحی، ساخته و سنجیده شده است.",
+            about_body3:
+              "شفاف کار می‌کنیم: دامنهٔ روشن، پیشرفت قابل مشاهده و کدی که کارفرما هر زمان بتواند تحویل بگیرد.",
+            com1_t: "مسئولیت‌پذیری",
+            com1_d:
+              "مهندسی که سیستم را می‌سازد، در محیط واقعی هم پاسخگوی آن است؛ نه فقط در نمایش.",
+            com2_t: "کیفیت",
+            com2_d:
+              "بازبینی، آزمون و کارایی سنجیده‌شده بخشی از تعریف «انجام‌شده» است.",
+            com3_t: "تداوم",
+            com3_d:
+              "مستندسازی و تحویل، همراه محصول ارائه می‌شود؛ نه وعدهٔ بعد.",
+            meta_team: "تیم",
+            meta_team_v: "جام‌ها · ۴ مهندس",
+            meta_company: "شرکت",
+            meta_company_v: "پولاریس",
+            meta_disciplines: "تخصص‌ها",
+            meta_disciplines_v: "وب · پلتفرم · هوش مصنوعی",
+            meta_works: "آثار تحویل‌شده",
+            meta_works_v: "۸ پروژه",
+            modal_about: "دربارهٔ مهندس",
+            modal_expertise: "تخصص‌ها",
+            modal_works: "آثار برگزیده",
+            modal_more: "در همهٔ پروژه‌های مشترک این بایگانی هم همکاری دارد.",
+            modal_close: "بستن نمایه",
+            foot_tag: "مهندسی نرم‌افزار · پولاریس",
+            theme: "تغییر پوسته",
+            lang: "تغییر زبان",
+            menu: "باز کردن منو",
+            cat: {
+              ALL: "همه",
+              BACKEND: "بک‌اند",
+              FRONTEND: "فرانت‌اند",
+              WEB: "وب",
+              SCALABLE: "مقیاس‌پذیر",
+              AI: "هوش مصنوعی",
+            },
+          },
+        };
+
+        /* The engineers of Cups. `i` is the profile image address, `rank` is the
+           card mark this member signs their work with. */
+        var MEMBERS = [
+          {
+            id: "five",
+            rank: "V",
+            card: "FIVE OF CUPS",
+            name: "Five",
+            i: "public/cinco-de-copas.webp",
+            role: {
+              en: "Full-stack web development and APIs",
+              ru: "Фуллстек-разработка и API",
+              fa: "توسعهٔ فول‌استک وب و ای‌پی‌آی",
+            },
+            about: {
+              en: "Builds the surface and the system behind it: interfaces that feel obvious, APIs that read like documentation. Works from the first pixel back to the endpoint and treats both as one craft.",
+              ru: "Строит и интерфейс, и систему за ним: понятные до очевидности экраны и API, которые читаются как документация. Работает от первого пикселя до конечной точки и считает это одним ремеслом.",
+              fa: "هم ظاهر را می‌سازد و هم سازوکارِ پشت آن: رابط‌هایی روشن و ای‌پی‌آی‌هایی که مانند مستند خوانده می‌شوند. از نخستین پیکسل تا آخرین درخواست پیش می‌رود و این دو را یک حرفه می‌داند.",
+            },
+            tech: [
+              "React",
+              "Next.js",
+              "TypeScript",
+              "GraphQL",
+              "REST",
+              "Node.js",
+            ],
+          },
+          {
+            id: "ace",
+            rank: "ACE",
+            card: "ACE OF CUPS",
+            name: "Ace",
+            i: "public/as-de-copas.webp",
+            role: {
+              en: "Scalable software and platform engineering",
+              ru: "Масштабируемое ПО и платформенная инженерия",
+              fa: "نرم‌افزار مقیاس‌پذیر و مهندسی پلتفرم",
+            },
+            about: {
+              en: "Owns the parts that have to survive scale: service architecture, data models and release pipelines. Keeps systems predictable under heavy traffic and constant change.",
+              ru: "Отвечает за то, что должно выдержать масштаб: архитектуру сервисов, модели данных и конвейеры релизов. Делает системы предсказуемыми при высокой нагрузке и постоянных изменениях.",
+              fa: "مسئول بخش‌هایی است که باید در مقیاس دوام بیاورند: معماری سرویس‌ها، مدل داده و خطوط انتشار. سیستم را زیر بار سنگین و تغییرات پیوسته قابل پیش‌بینی نگه می‌دارد.",
+            },
+            tech: [
+              "Python",
+              "Go",
+              "Node.js",
+              "Next.js",
+              "PostgreSQL",
+              "Redis",
+              "Docker",
+              "TypeScript",
+              "GraphQL",
+            ],
+          },
+          {
+            id: "knight",
+            rank: "KNIGHT",
+            card: "KNIGHT OF CUPS",
+            name: "Knight",
+            i: "public/cavaleiro-de-copas.webp",
+            role: {
+              en: "Machine learning and deep learning",
+              ru: "Машинное обучение и глубокое обучение",
+              fa: "یادگیری ماشین و یادگیری عمیق",
+            },
+            about: {
+              en: "Takes models out of the notebook and into production: vision, language, and the engineering that turns research into a service someone can rely on.",
+              ru: "Выводит модели из блокнота в продакшен: зрение, язык и инженерия, превращающая исследование в сервис, на который можно положиться.",
+              fa: "مدل‌ها را از نوت‌بوک به محیط واقعی می‌آورد: بینایی، زبان و آن مهندسی‌ای که پژوهش را به سرویسی قابل اعتماد تبدیل می‌کند.",
+            },
+            tech: [
+              "Python",
+              "PyTorch",
+              "TensorFlow",
+              "Scikit-learn",
+              "Pandas",
+              "NumPy",
+            ],
+          },
+          {
+            id: "two",
+            rank: "II",
+            card: "TWO OF CUPS",
+            name: "Two",
+            i: "public/dois-de-copas.webp",
+            role: {
+              en: "Full-stack web and WordPress development",
+              ru: "Фуллстек-разработка и WordPress",
+              fa: "توسعهٔ فول‌استک وب و وردپرس",
+            },
+            about: {
+              en: "Develops websites, online stores and WordPress products across the interface, server and database. Works with Tailwind, JavaScript, PHP and modern back-end tools.",
+              ru: "Разрабатывает сайты, интернет-магазины и продукты WordPress — от интерфейса до сервера и базы данных. Работает с Tailwind, JavaScript, PHP и современными серверными инструментами.",
+              fa: "سایت، فروشگاه آنلاین و محصولات وردپرسی را از رابط کاربری تا سرور و پایگاه داده توسعه می‌دهد. با تیلویند، جاوااسکریپت، PHP و ابزارهای بک‌اند کار می‌کند.",
+            },
+            tech: [
+              "HTML",
+              "CSS",
+              "JavaScript",
+              "Tailwind CSS",
+              "PHP",
+              "WordPress",
+              "WooCommerce",
+              "Spring Boot",
+              "PostgreSQL",
+            ],
+          },
+        ];
+
+        var WORKS = [
+          {
+            n: {
+              en: "Business Introduction Website",
+              ru: "Веб-сайт для представления бизнеса",
+              fa: "وب‌سایت معرفی کسب‌وکار",
+            },
+            d: {
+              en: "A customised, interactive site that introduces the business and opens a channel to its users.",
+              ru: "Интерактивный сайт на заказ: представляет бизнес и открывает канал связи с пользователями.",
+              fa: "وب‌سایت سفارشی و تعاملی که کسب‌وکار را معرفی می‌کند و راه ارتباطی با کاربران را باز می‌کند.",
+            },
+            c: ["WEB", "FRONTEND"],
+            m: "ace",
+            i: "public/New_castle_port.webp",
+          },
+          {
+            n: { en: "Be Aware", ru: "Be Aware", fa: "آگاه باش" },
+            d: {
+              en: "A habit competition platform: shared streaks, groups and progress people come back to.",
+              ru: "Платформа соревнования привычек: общие серии, группы и прогресс, к которому возвращаются.",
+              fa: "پلتفرم رقابتی برای ساختن عادت‌های تازه: زنجیره‌های مشترک، گروه‌ها و پیشرفتی که کاربر بازمی‌گردد.",
+            },
+            c: ["WEB", "SCALABLE"],
+            m: "ace",
+            i: "public/Be_up_port.webp",
+          },
+          {
+            n: {
+              en: "Intelligence Dashboard",
+              ru: "Интеллектуальная панель",
+              fa: "داشبورد هوشمند قرارداد",
+            },
+            d: {
+              en: "AI-powered contract intelligence, turning documents into clear and actionable decisions.",
+              ru: "ИИ-анализ контрактов: превращает документы в ясные и применимые решения.",
+              fa: "تحلیل هوشمند قراردادها با هوش مصنوعی: تبدیل اسناد به تصمیم‌هایی روشن و قابل اجرا.",
+            },
+            c: ["AI", "BACKEND"],
+            m: "five",
+            i: "public/contract-int.webp",
+          },
+          {
+            n: {
+              en: "AC Portfolio",
+              ru: "Портфолио AC",
+              fa: "پورتفولیوی مدرن",
+            },
+            d: {
+              en: "A modern portfolio experience built around clarity, craft and performance.",
+              ru: "Современное портфолио, построенное на ясности, мастерстве и производительности.",
+              fa: "تجربه‌ای مدرن از پورتفولیو با تمرکز بر وضوح، کیفیت و عملکرد.",
+            },
+            c: ["WEB", "FRONTEND"],
+            m: "five",
+            i: "public/personal-port.webp",
+          },
+          {
+            n: { en: "Leadfresh", ru: "Leadfresh", fa: "راه‌های نوین ترید" },
+            d: {
+              en: "A new way to trade: intelligent signals and a sharper view of the market.",
+              ru: "Новый способ трейдинга: интеллектуальные сигналы и более точный взгляд на рынок.",
+              fa: "راهی نوین برای ترید: سیگنال‌های هوشمند و نگاهی دقیق‌تر به بازار.",
+            },
+            c: ["AI", "WEB"],
+            m: "five",
+            i: "public/trade-dash.webp",
+          },
+          {
+            n: { en: "Noghreluna", ru: "Noghreluna", fa: "نقره لونا" },
+            d: {
+              en: "An online jewelry storefront with a distinct visual identity.",
+              ru: "Интернет-магазин украшений с собственной визуальной айдентикой.",
+              fa: "فروشگاه آنلاین زیورآلات با هویت بصری اختصاصی.",
+            },
+            c: ["WEB", "FRONTEND"],
+            m: "two",
+            i: "public/noghrelona.webp",
+            url: "https://noghreluna.ir/home/",
+          },
+          {
+            n: {
+              en: "Tahanoa Invoice Links",
+              ru: "Tahanoa Invoice Links",
+              fa: "لینک پرداخت و صورتحساب تاهانا",
+            },
+            d: {
+              en: "A WordPress plugin for creating invoices and ZarinPal payment links.",
+              ru: "Плагин WordPress для счетов и платежных ссылок ZarinPal.",
+              fa: "افزونهٔ وردپرس برای ساخت صورتحساب و لینک پرداخت زرین‌پال.",
+            },
+            c: ["BACKEND", "WEB"],
+            m: "two",
+            i: "public/tahanoa.webp",
+            url: "https://fa.wordpress.org/plugins/tahanoa-invoice-links-for-zarinpal/",
+          },
+          {
+            n: { en: "Noghrehana", ru: "Noghrehana", fa: "نقره هانا" },
+            d: {
+              en: "A silver jewelry storefront with a product catalog and shopping experience.",
+              ru: "Магазин серебряных украшений с каталогом товаров и покупкой онлайн.",
+              fa: "فروشگاه زیورآلات نقره با کاتالوگ محصولات و تجربهٔ خرید آنلاین.",
+            },
+            c: ["WEB", "FRONTEND"],
+            m: "two",
+            i: "public/noghrehana.webp",
+            url: "https://noghrehana.ir/",
+          },
+        ];
+
+        var FILTERS = ["ALL", "BACKEND", "WEB", "FRONTEND", "SCALABLE", "AI"];
+
+        /* ---------------- helpers ---------------- */
+        var state = { lang: "en" };
+        var hooks = []; // re-render callbacks registered by the sections
+
+        function t(key) {
+          var dict = I18N[state.lang] || I18N.en;
+          return dict[key] != null ? dict[key] : I18N.en[key];
+        }
+        function pick(value) {
+          if (value == null) return "";
+          if (typeof value === "string") return value;
+          return value[state.lang] != null ? value[state.lang] : value.en || "";
+        }
+        function el(tag, cls, text) {
+          var node = document.createElement(tag);
+          if (cls) node.className = cls;
+          if (text != null) node.textContent = text;
+          return node;
+        }
+        function qs(selector, root) {
+          return (root || document).querySelector(selector);
+        }
+        function member(id) {
+          for (var i = 0; i < MEMBERS.length; i++) {
+            if (MEMBERS[i].id === id) return MEMBERS[i];
+          }
+          return null;
+        }
+        function worksOf(id) {
+          return WORKS.filter(function (w) {
+            return w.m === id;
+          });
+        }
+        function catLabel(code) {
+          var cat = (I18N[state.lang] || I18N.en).cat;
+          return cat[code] || code;
+        }
+
+        /* Reveal on scroll. Sections call observe() again after they render. */
+        var io =
+          "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                function (entries) {
+                  entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                      entry.target.classList.add("in");
+                      io.unobserve(entry.target);
+                    }
+                  });
+                },
+                { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+              )
+            : null;
+
+        function observe(root) {
+          var nodes = (root || document).querySelectorAll(".rv:not(.in)");
+          [].forEach.call(nodes, function (node, i) {
+            if (!io) {
+              node.classList.add("in");
+              return;
+            }
+            node.style.transitionDelay = Math.min(i, 5) * 60 + "ms";
+            io.observe(node);
+          });
+        }
+
+        /* One language switch refreshes every section that registered a renderer. */
+        function onRender(fn) {
+          hooks.push(fn);
+        }
+        function renderAll() {
+          hooks.forEach(function (fn) {
+            fn();
+          });
+        }
+        function setLang(lang) {
+          state.lang = I18N[lang] ? lang : "en";
+          document.documentElement.lang = state.lang;
+          document.documentElement.dir = state.lang === "fa" ? "rtl" : "ltr";
+        }
+
+        return {
+          I18N: I18N,
+          MEMBERS: MEMBERS,
+          WORKS: WORKS,
+          FILTERS: FILTERS,
+          state: state,
+          t: t,
+          pick: pick,
+          el: el,
+          qs: qs,
+          member: member,
+          worksOf: worksOf,
+          catLabel: catLabel,
+          observe: observe,
+          onRender: onRender,
+          renderAll: renderAll,
+          setLang: setLang,
+        };
+      })();
+    </script>
+  </head>
+  <body
+    class="font-sans text-[15px] font-light leading-relaxed text-ink antialiased"
+  >
+    <!-- Page background: plain Tailwind gradient layers, no floating decoration. -->
+    <div
+      class="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-[var(--bg-0)] via-[var(--bg-1)] to-[var(--bg-2)]"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(120%_70%_at_50%_-10%,var(--halo),transparent_62%)]"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative z-10">
+      <header
+        id="hdr"
+        data-stuck="false"
+        class="fixed inset-x-0 top-0 z-30 border-b border-transparent transition-colors duration-500 data-[stuck=true]:border-line-soft data-[stuck=true]:bg-[var(--hdr-bg)] data-[stuck=true]:backdrop-blur-md"
+      >
+        <div
+          class="wrap flex h-[clamp(60px,8vh,84px)] items-center justify-between gap-4"
+        >
+          <a class="flex shrink-0 items-center gap-3" href="#home" data-nav>
+            <img class="w-8 rounded-full" src="public/logo.webp" alt="logo" />
+            <span
+              class="font-serif text-[15px] font-normal tracking-[.42em] text-ink"
+              >POLARIS</span
+            >
+          </a>
+
+          <nav
+            id="nav"
+            class="hidden items-center gap-[clamp(20px,3vw,44px)] lg:flex"
+          >
+            <a href="#home" data-nav class="nav-link text-gold-soft">CUPS</a>
+            <a href="#members" data-nav class="nav-link" data-i18n="nav_members"
+              >MEMBERS</a
+            >
+            <a href="#works" data-nav class="nav-link" data-i18n="nav_works"
+              >WORKS</a
+            >
+            <a href="#about" data-nav class="nav-link" data-i18n="nav_about"
+              >ABOUT</a
+            >
+          </nav>
+
+          <div class="flex shrink-0 items-center gap-2.5">
+            <button
+              id="themeBtn"
+              type="button"
+              class="icon-btn"
+              aria-label="Toggle theme"
+              data-i18n-aria="theme"
+            >
+              <span
+                class="h-3.5 w-3.5 rounded-full border border-gold bg-gradient-to-br from-gold from-50% to-transparent"
+                aria-hidden="true"
+              ></span>
+            </button>
+
+            <div class="relative">
+              <button
+                id="langBtn"
+                type="button"
+                class="icon-btn text-[12px] tracking-[.06em]"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-label="Change language"
+                data-i18n-aria="lang"
+              >
+                EN
+              </button>
+              <div
+                id="langMenu"
+                role="menu"
+                aria-hidden="true"
+                class="absolute end-0 top-[calc(100%+10px)] z-40 hidden min-w-[140px] flex-col gap-0.5 rounded-lg border border-line bg-[var(--menu-bg)] p-1.5 backdrop-blur-md"
+              >
+                <button role="menuitem" data-lang="en" class="lang-item">
+                  English
+                </button>
+                <button role="menuitem" data-lang="ru" class="lang-item">
+                  Русский
+                </button>
+                <button
+                  role="menuitem"
+                  data-lang="fa"
+                  class="lang-item font-fa"
+                >
+                  فارسی
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            id="burger"
+            type="button"
+            class="flex h-9 w-9 shrink-0 items-center justify-center text-ink lg:hidden"
+            aria-label="Open menu"
+            aria-expanded="false"
+            data-i18n-aria="menu"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+              data-icon="open"
+            >
+              <path d="M3 7h18M3 12h18M3 17h12" />
+            </svg>
+            <svg
+              class="hidden h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+              data-icon="close"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div
+        id="drawer"
+        class="fixed inset-0 z-20 hidden flex-col items-center justify-center gap-8 bg-[var(--menu-bg)] backdrop-blur-md lg:hidden"
+      >
+        <a
+          href="#home"
+          data-nav
+          class="nav-link font-serif !text-2xl tracking-[.28em]"
+          >CUPS</a
+        >
+        <a
+          href="#members"
+          data-nav
+          class="nav-link font-serif !text-2xl tracking-[.28em]"
+          data-i18n="nav_members"
+          >MEMBERS</a
+        >
+        <a
+          href="#works"
+          data-nav
+          class="nav-link font-serif !text-2xl tracking-[.28em]"
+          data-i18n="nav_works"
+          >WORKS</a
+        >
+        <a
+          href="#about"
+          data-nav
+          class="nav-link font-serif !text-2xl tracking-[.28em]"
+          data-i18n="nav_about"
+          >ABOUT</a
+        >
+        <p class="label mt-4 text-gold-soft" data-i18n="foot_tag"></p>
+      </div>
+
+      <!-- ==================== HERO ==================== -->
+      <main
+        id="home"
+        class="relative isolate h-screen min-h-[700px] max-md:h-auto max-md:min-h-screen"
+      >
+        <div
+          class="mx-auto grid h-full max-w-[1320px] grid-cols-1 items-center gap-0 px-6 pb-24 pt-28 text-center md:grid-cols-2 md:gap-10 md:px-[clamp(48px,7vw,112px)] md:pb-[116px] md:pt-[clamp(100px,14vh,160px)] md:text-start"
+        >
+          <div class="relative z-10 order-2 md:order-1">
+            <p
+              class="hero-eyebrow inline-flex items-center gap-3.5 font-sans text-[10px] uppercase tracking-[.3em] text-gold-soft"
+              data-i18n="hero_eyebrow"
+            >
+              A POLARIS ENGINEERING COLLECTIVE
+            </p>
+            <h1
+              class="hero-title my-4 font-serif text-[clamp(86px,22vw,140px)] font-light leading-[.8] tracking-[-.055em] text-[var(--h1-1)] md:my-5 md:text-[clamp(100px,14vw,210px)]"
+            >
+              CUP<span class="text-gold-soft">S</span>
+            </h1>
+            <p
+              class="mx-auto max-w-[32ch] text-[11px] uppercase leading-[1.9] tracking-[.24em] text-gold md:mx-0"
+              data-i18n="hero_sub"
+            >
+              THE SOFTWARE ENGINEERING TEAM OF POLARIS
+            </p>
+            <p
+              class="hero-lede mx-auto mt-5 max-w-[26ch] font-serif text-[clamp(22px,2.5vw,33px)] leading-[1.35] text-ink md:mx-0 md:mt-7"
+              data-i18n="hero_lede"
+            >
+              Four engineers, one standard: software that holds up in
+              production.
+            </p>
+            <div
+              class="hero-actions mt-7 flex flex-wrap items-center justify-center gap-x-7 gap-y-4 md:mt-10 md:justify-start"
+            >
+              <a
+                class="inline-flex min-h-[50px] items-center justify-center gap-7 border border-gold bg-gold px-6 font-sans text-[12px] font-medium uppercase tracking-[.12em] text-[#11152b] transition duration-300 hover:-translate-y-1 hover:bg-gold-soft hover:shadow-[0_12px_28px_rgba(199,165,106,.22)]"
+                href="#works"
+                ><span data-i18n="hero_work">Explore our work</span
+                ><span aria-hidden="true">↗</span></a
+              >
+              <a
+                class="inline-flex min-h-11 items-center gap-2.5 border-b border-line font-sans text-[12px] uppercase tracking-[.12em] text-ink-2 transition-colors hover:border-gold hover:text-gold-soft"
+                href="#members"
+                ><span data-i18n="hero_team">Meet the team</span
+                ><span aria-hidden="true">→</span></a
+              >
+            </div>
+          </div>
+          <div
+            class="hero-visual relative order-1 grid h-[min(76vw,370px)] place-items-center md:order-2 md:h-auto md:min-h-[min(500px,55vh)]"
+          >
+            <img
+              class="hero-cup relative z-10 h-auto w-[min(77vw,360px)] drop-shadow-[0_20px_42px_rgba(112,86,210,.22)] md:w-[min(100%,590px)]"
+              src="public/cups-original-transparent.webp"
+              width="500"
+              height="500"
+              fetchpriority="high"
+              alt="Illustrated watercolor chalice, the Cups team emblem"
+              data-i18n-alt="hero_image"
+            />
+            <span
+              class="absolute bottom-10 end-0 z-10 hidden text-[10px] tracking-[.25em] text-gold [writing-mode:vertical-rl] md:block"
+              aria-hidden="true"
+              >POLARIS / CUPS / 01</span
+            >
+          </div>
+        </div>
+        <div
+          class="absolute inset-x-6 bottom-5 flex items-center justify-center gap-5 border-t border-line-soft pt-4 font-sans text-[10px] uppercase tracking-[.18em] text-ink-2 sm:justify-between md:inset-x-[clamp(48px,7vw,112px)] md:bottom-8 md:pt-5"
+        >
+          <span class="hidden sm:block" data-i18n="hero_foot"
+            >ENGINEERED WITH INTENTION</span
+          ><a
+            class="inline-flex items-center gap-3 text-gold-soft"
+            href="#members"
+            data-i18n-aria="scroll_cue"
+            ><span data-i18n="hero_scroll">SCROLL TO EXPLORE</span
+            ><span aria-hidden="true">↓</span></a
+          >
+        </div>
+      </main>
+
+      <!-- ==================== TEAM ==================== -->
+      <section id="members" class="sect">
+        <div class="wrap">
+          <div class="rv flex flex-wrap items-end justify-between gap-5">
+            <h2
+              class="font-serif text-[clamp(16px,4.2vw,21px)] tracking-[.28em] text-[var(--title)]"
+            >
+              <em class="not-italic text-gold">✦</em>
+              <span data-i18n="team_title">THE TEAM</span>
+            </h2>
+            <p
+              class="font-serif text-[clamp(14px,3.4vw,16px)] text-ink-2"
+              data-i18n="team_sub"
+            >
+              The engineers of Cups
+            </p>
+          </div>
+          <div
+            id="membersGrid"
+            class="mx-auto mt-[clamp(32px,5vh,52px)] grid max-w-[1180px] grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4"
+          ></div>
+        </div>
+
+        <!-- Team-card markup lives here in the section; the script below only fills the content. -->
+        <template id="tplMember">
+          <button
+            type="button"
+            class="group block w-full rounded-xl border border-line-soft bg-[var(--tint)] p-2 text-start transition duration-300 hover:-translate-y-1 hover:border-[var(--hover-line)] sm:p-4"
+            data-member=""
+          >
+            <div
+              class="rounded bg-gradient-to-br from-[#f3ead6] via-[#e7dcc2] to-[#dccfb2] p-1.5 shadow-[0_14px_34px_rgba(2,6,18,.55)] ring-1 ring-[rgba(120,96,52,.42)] transition duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_20px_44px_rgba(2,6,18,.55)]"
+            >
+              <div class="relative border border-[rgba(120,96,52,.3)] p-1">
+                <span
+                  class="absolute left-1 top-0.5 text-[8px] text-[rgba(120,96,52,.55)]"
+                  aria-hidden="true"
+                  >✦</span
+                >
+                <span
+                  class="absolute right-1 top-0.5 text-[8px] text-[rgba(120,96,52,.55)]"
+                  aria-hidden="true"
+                  >✦</span
+                >
+                <p
+                  class="py-[7px] text-center font-sans text-[10px] uppercase tracking-[.2em] text-[#3e3524]"
+                  data-rank=""
+                ></p>
+                <img
+                  class="w-full border border-[rgba(60,48,28,.55)] object-cover object-top saturate-[.92]"
+                  data-img=""
+                  alt=""
+                  loading="lazy"
+                />
+                <p
+                  class="py-2 text-center font-sans text-[9.5px] uppercase tracking-[.2em] text-[#3e3524]"
+                  data-card=""
+                ></p>
+              </div>
+            </div>
+            <div class="pt-4">
+              <h3 class="font-serif text-xl text-ink" data-name=""></h3>
+              <p
+                class="mt-2 min-h-[2lh] font-serif text-[clamp(13.5px,3.2vw,16px)] leading-relaxed text-ink-2"
+                data-role=""
+              ></p>
+              <span
+                class="mt-4 block h-px w-8 bg-line transition-all duration-500 group-hover:w-11 group-hover:bg-gold"
+                aria-hidden="true"
+              ></span>
+            </div>
+          </button>
+        </template>
+
+        <script>
+          // Renders the team cards into #membersGrid. Content comes from POLARIS.MEMBERS.
+          (function () {
+            "use strict";
+            var P = window.POLARIS;
+            var grid = document.getElementById("membersGrid");
+            var tpl = document.getElementById("tplMember");
+
+            function render() {
+              grid.innerHTML = "";
+              P.MEMBERS.forEach(function (m) {
+                var card = tpl.content.firstElementChild.cloneNode(true);
+                card.setAttribute("data-member", m.id);
+                card.setAttribute(
+                  "aria-label",
+                  m.card + " — " + P.pick(m.role),
+                );
+                card.querySelector("[data-rank]").textContent = m.rank;
+                var img = card.querySelector("[data-img]");
+                img.src = m.i;
+                img.alt = m.card;
+                card.querySelector("[data-card]").textContent = m.card;
+                card.querySelector("[data-name]").textContent = m.name;
+                card.querySelector("[data-role]").textContent = P.pick(m.role);
+                card.classList.add("rv");
+                card.addEventListener("click", function () {
+                  P.openMember(m.id);
+                });
+                grid.appendChild(card);
+              });
+              P.observe(grid);
+            }
+
+            P.onRender(render);
+            render();
+          })();
+        </script>
+      </section>
+
+      <!-- ==================== WORKS ==================== -->
+      <section id="works" class="sect !pt-0">
+        <div class="wrap">
+          <div
+            class="h-px bg-gradient-to-r from-transparent via-[var(--line-soft)] to-transparent"
+          ></div>
+          <div
+            class="rv mt-[clamp(64px,10vh,132px)] flex flex-wrap items-end justify-between gap-5"
+          >
+            <div>
+              <h2
+                class="font-serif text-[clamp(16px,4.2vw,21px)] tracking-[.28em] text-[var(--title)]"
+              >
+                <em class="not-italic text-gold">✦</em>
+                <span data-i18n="works_title">WORKS</span>
+              </h2>
+              <p
+                class="mt-3.5 font-serif text-[clamp(15px,3.6vw,17px)] text-ink-2"
+                data-i18n="works_sub"
+              >
+                Systems designed, built and shipped by Cups
+              </p>
+            </div>
+          </div>
+
+          <div
+            id="filters"
+            class="rv mt-[clamp(26px,4.5vh,40px)] flex flex-wrap justify-center gap-x-[22px] gap-y-2 border-b border-line-soft pb-[18px]"
+          ></div>
+
+          <div
+            id="slider"
+            class="relative mt-[clamp(30px,5vh,48px)] touch-pan-y overflow-hidden"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Works"
+            tabindex="0"
+          >
+            <div
+              id="track"
+              class="flex gap-[clamp(22px,4vw,38px)] transition-transform duration-700 ease-out will-change-transform"
+            ></div>
+          </div>
+
+          <div
+            class="mt-[clamp(26px,4vh,40px)] flex items-center justify-center gap-[18px]"
+          >
+            <button
+              id="sPrev"
+              type="button"
+              class="icon-btn"
+              aria-label="Previous work"
+            >
+              <span
+                class="block h-[9px] w-[9px] -rotate-45 border-b border-l border-current rtl:rotate-[225deg]"
+                aria-hidden="true"
+              ></span>
+            </button>
+            <div
+              id="dots"
+              class="flex items-center gap-2.5"
+              role="tablist"
+              aria-label="Works pages"
+            ></div>
+            <button
+              id="sNext"
+              type="button"
+              class="icon-btn"
+              aria-label="Next work"
+            >
+              <span
+                class="block h-[9px] w-[9px] rotate-45 border-r border-t border-current rtl:rotate-[-135deg]"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Work-slide markup lives here in the section; the script below only fills the content. -->
+        <template id="tplWork">
+          <a
+            class="work group w-full shrink-0 grow-0 basis-full text-start transition-transform duration-500 hover:-translate-y-1 sm:basis-[calc((100%-26px)/2)] lg:basis-[calc((100%-52px)/3)]"
+            data-work=""
+          >
+            <div
+              class="relative overflow-hidden rounded-xl border border-line bg-[var(--bg-1)] transition-colors duration-500 group-hover:border-[var(--hover-line)]"
+            >
+              <img
+                class="aspect-[16/10] w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                data-img=""
+                alt=""
+                loading="lazy"
+              />
+            </div>
+            <div class="mt-[18px] flex items-baseline justify-between gap-4">
+              <h3
+                class="font-serif text-[clamp(17px,4.4vw,21px)] font-normal tracking-[.03em] text-ink"
+                data-name=""
+              ></h3>
+              <span
+                class="whitespace-nowrap text-[9px] tracking-[.2em] text-[rgba(199,165,106,.72)]"
+                data-cat=""
+              ></span>
+            </div>
+            <p
+              class="mt-2.5 min-h-[2lh] font-serif text-[15.5px] leading-[1.6] text-ink-2"
+              data-desc=""
+            ></p>
+            <div
+              class="mt-4 flex items-center justify-between gap-3.5 border-t border-line-soft pt-3.5"
+            >
+              <span
+                class="text-[9.5px] tracking-[.2em] text-ink-2 transition-colors duration-500 group-hover:text-ink"
+                data-owner=""
+              ></span>
+              <span
+                class="block h-px w-8 bg-line transition-all duration-500 group-hover:w-11 group-hover:bg-gold"
+                aria-hidden="true"
+              ></span>
+            </div>
+          </a>
+        </template>
+
+        <script>
+          // Renders the filter buttons and the work slides, and runs the carousel.
+          (function () {
+            "use strict";
+            var P = window.POLARIS;
+            var filters = document.getElementById("filters");
+            var slider = document.getElementById("slider");
+            var track = document.getElementById("track");
+            var dots = document.getElementById("dots");
+            var tpl = document.getElementById("tplWork");
+            var currentFilter = "ALL";
+            var sIndex = 0;
+            var sCount = 0;
+            var autoTimer = null;
+
+            function dirSign() {
+              return document.documentElement.dir === "rtl" ? 1 : -1;
+            }
+            function slideStep() {
+              var s = track.querySelector(".work");
+              if (!s) return 0;
+              var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+              return s.getBoundingClientRect().width + gap;
+            }
+            function maxIndex() {
+              var step = slideStep();
+              if (!sCount || step <= 0) return 0;
+              var per = Math.max(1, Math.round(track.clientWidth / step));
+              return Math.max(0, sCount - per);
+            }
+            function updateDots() {
+              [].forEach.call(dots.children, function (b, i) {
+                b.classList.toggle("is-on", i === sIndex);
+                b.setAttribute(
+                  "aria-selected",
+                  i === sIndex ? "true" : "false",
+                );
+              });
+            }
+            function updateControls() {
+              var done = sCount <= 1;
+              document.getElementById("sPrev").disabled = done;
+              document.getElementById("sNext").disabled = done;
+            }
+            function apply(animate) {
+              if (!animate) track.classList.add("no-anim");
+              sIndex = Math.max(0, Math.min(maxIndex(), sIndex));
+              track.style.transform =
+                "translateX(" + dirSign() * sIndex * slideStep() + "px)";
+              if (!animate) {
+                void track.offsetWidth;
+                track.classList.remove("no-anim");
+              }
+              updateDots();
+              updateControls();
+            }
+            function buildDots() {
+              dots.innerHTML = "";
+              for (var i = 0; i < maxIndex() + 1; i++) {
+                (function (idx) {
+                  var b = document.createElement("button");
+                  b.type = "button";
+                  b.className = "dot";
+                  b.setAttribute("role", "tab");
+                  b.setAttribute("aria-label", idx + 1 + " / " + sCount);
+                  if (idx === sIndex) b.classList.add("is-on");
+                  b.addEventListener("click", function () {
+                    sIndex = idx;
+                    apply(true);
+                    restartAuto();
+                  });
+                  dots.appendChild(b);
+                })(i);
+              }
+            }
+            function go(d) {
+              var mx = maxIndex();
+              if (mx <= 0) {
+                sIndex = 0;
+                apply(true);
+                return;
+              }
+              sIndex =
+                d > 0
+                  ? sIndex < mx
+                    ? sIndex + 1
+                    : 0
+                  : sIndex > 0
+                    ? sIndex - 1
+                    : mx;
+              apply(true);
+            }
+            function startAuto() {
+              if (autoTimer || sCount <= 1) return;
+              if (
+                window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              )
+                return;
+              autoTimer = setInterval(function () {
+                if (!dragging) go(1);
+              }, 6200);
+            }
+            function stopAuto() {
+              if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+              }
+            }
+            function restartAuto() {
+              stopAuto();
+              startAuto();
+            }
+            // Exposed for the page script below (reads slider state for autoplay resets).
+            window.__cupsWorks = { stopAuto: stopAuto, startAuto: startAuto };
+
+            function render() {
+              var list =
+                currentFilter === "ALL"
+                  ? P.WORKS
+                  : P.WORKS.filter(function (w) {
+                      return w.c.indexOf(currentFilter) > -1;
+                    });
+              sCount = list.length;
+              track.style.transform = "";
+              track.innerHTML = "";
+              list.forEach(function (w) {
+                var owner = P.member(w.m);
+                if (!owner) return;
+                var slide = tpl.content.firstElementChild.cloneNode(true);
+                slide.setAttribute("data-work", w.m);
+                slide.href = w.url || "#member/" + w.m;
+                if (w.url) {
+                  slide.target = "_blank";
+                  slide.rel = "noopener noreferrer";
+                }
+                slide.setAttribute(
+                  "aria-label",
+                  P.pick(w.n) + " — " + owner.name,
+                );
+                var img = slide.querySelector("[data-img]");
+                img.src = w.i;
+                img.alt = P.pick(w.n);
+                slide.querySelector("[data-name]").textContent = P.pick(w.n);
+                slide.querySelector("[data-cat]").textContent = P.catLabel(
+                  w.c[0],
+                );
+                slide.querySelector("[data-desc]").textContent = P.pick(w.d);
+                slide.querySelector("[data-owner]").textContent = w.url
+                  ? P.t("visit_project") + " ↗"
+                  : owner.card;
+                if (!w.url)
+                  slide.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    P.openMember(w.m);
+                  });
+                slide.classList.add("rv");
+                track.appendChild(slide);
+              });
+              filters.innerHTML = "";
+              P.FILTERS.forEach(function (f) {
+                var b = document.createElement("button");
+                b.type = "button";
+                b.textContent = P.catLabel(f);
+                b.setAttribute("data-f", f);
+                b.className =
+                  "filter-btn" + (f === currentFilter ? " is-on" : "");
+                filters.appendChild(b);
+              });
+              sIndex = 0;
+              buildDots();
+              apply(false);
+              P.observe(slider.parentElement);
+              restartAuto();
+            }
+
+            filters.addEventListener("click", function (e) {
+              var b = e.target.closest("button[data-f]");
+              if (!b) return;
+              currentFilter = b.getAttribute("data-f");
+              [].forEach.call(filters.querySelectorAll("button"), function (x) {
+                x.classList.toggle("is-on", x === b);
+              });
+              sIndex = 0;
+              render();
+              restartAuto();
+            });
+
+            // Carousel controls: buttons, keyboard, drag, autoplay.
+            document
+              .getElementById("sPrev")
+              .addEventListener("click", function () {
+                go(-1);
+                restartAuto();
+              });
+            document
+              .getElementById("sNext")
+              .addEventListener("click", function () {
+                go(1);
+                restartAuto();
+              });
+            slider.addEventListener("keydown", function (e) {
+              if (["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(e.key) < 0)
+                return;
+              e.preventDefault();
+              stopAuto();
+              var mx = maxIndex();
+              if (e.key === "Home") sIndex = 0;
+              else if (e.key === "End") sIndex = mx;
+              else if (e.key === "ArrowRight")
+                sIndex =
+                  dirSign() < 0
+                    ? Math.min(mx, sIndex + 1)
+                    : Math.max(0, sIndex - 1);
+              else
+                sIndex =
+                  dirSign() < 0
+                    ? Math.max(0, sIndex - 1)
+                    : Math.min(mx, sIndex + 1);
+              apply(true);
+              startAuto();
+            });
+
+            var dragging = false;
+            var moved = false;
+            var startX = 0;
+            var dragBase = 0;
+            slider.addEventListener("pointerdown", function (e) {
+              if (sCount <= 1) return;
+              dragging = true;
+              moved = false;
+              startX = e.clientX;
+              dragBase = dirSign() * sIndex * slideStep();
+              track.classList.add("no-anim");
+              try {
+                slider.setPointerCapture(e.pointerId);
+              } catch (_) {}
+              stopAuto();
+            });
+            slider.addEventListener("pointermove", function (e) {
+              if (!dragging) return;
+              if (Math.abs(e.clientX - startX) > 6) moved = true;
+              track.style.transform =
+                "translateX(" + (dragBase + (e.clientX - startX)) + "px)";
+            });
+            function endDrag(e) {
+              if (!dragging) return;
+              dragging = false;
+              track.classList.remove("no-anim");
+              var cx = e.clientX != null ? e.clientX : startX;
+              sIndex = Math.max(
+                0,
+                Math.min(
+                  maxIndex(),
+                  Math.round(
+                    sIndex + (dirSign() * (cx - startX)) / slideStep(),
+                  ),
+                ),
+              );
+              apply(true);
+              startAuto();
+              if (moved) {
+                var block = function (ev) {
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                  slider.removeEventListener("click", block, true);
+                };
+                slider.addEventListener("click", block, true);
+              }
+            }
+            slider.addEventListener("pointerup", endDrag);
+            slider.addEventListener("pointercancel", endDrag);
+            slider.addEventListener("pointerenter", stopAuto);
+            slider.addEventListener("pointerleave", function () {
+              if (!dragging) startAuto();
+            });
+            slider.addEventListener("focusin", stopAuto);
+            slider.addEventListener("focusout", function () {
+              if (!dragging) startAuto();
+            });
+            var rzT;
+            window.addEventListener(
+              "resize",
+              function () {
+                clearTimeout(rzT);
+                rzT = setTimeout(function () {
+                  apply(false);
+                }, 150);
+              },
+              { passive: true },
+            );
+
+            P.onRender(render);
+            render();
+          })();
+        </script>
+      </section>
+
+      <!-- ==================== ABOUT ==================== -->
+      <section id="about" class="sect !pt-0">
+        <div class="wrap">
+          <div
+            class="h-px bg-gradient-to-r from-transparent via-[var(--line-soft)] to-transparent"
+          ></div>
+          <div class="rv mt-[clamp(64px,10vh,132px)]">
+            <h2
+              class="font-serif text-[clamp(16px,4.2vw,21px)] tracking-[.28em] text-[var(--title)]"
+            >
+              <em class="not-italic text-gold">✦</em>
+              <span data-i18n="about_title">ABOUT</span>
+            </h2>
+          </div>
+
+          <div
+            class="rv mt-[clamp(30px,5vh,48px)] grid gap-[clamp(26px,5vw,54px)] md:grid-cols-[.85fr_1.15fr]"
+          >
+            <p
+              class="font-serif text-[clamp(19px,5vw,27px)] font-semibold leading-[1.55] text-ink"
+              data-i18n="about_lede"
+            ></p>
+            <div class="space-y-4">
+              <p class="text-ink-2" data-i18n="about_body1"></p>
+              <p class="text-ink-2" data-i18n="about_body2"></p>
+            </div>
+          </div>
+
+          <div
+            class="rv mt-[clamp(34px,6vh,60px)] grid gap-[clamp(16px,3vw,24px)] sm:grid-cols-3"
+          >
+            <div class="rounded border border-line bg-[var(--tint)] p-6">
+              <p class="label text-gold" data-i18n="com1_t"></p>
+              <p
+                class="mt-3 font-serif text-[clamp(14.5px,3.4vw,16px)] leading-[1.7] text-ink-2"
+                data-i18n="com1_d"
+              ></p>
+            </div>
+            <div class="rounded border border-line bg-[var(--tint)] p-6">
+              <p class="label text-gold" data-i18n="com2_t"></p>
+              <p
+                class="mt-3 font-serif text-[clamp(14.5px,3.4vw,16px)] leading-[1.7] text-ink-2"
+                data-i18n="com2_d"
+              ></p>
+            </div>
+            <div class="rounded border border-line bg-[var(--tint)] p-6">
+              <p class="label text-gold" data-i18n="com3_t"></p>
+              <p
+                class="mt-3 font-serif text-[clamp(14.5px,3.4vw,16px)] leading-[1.7] text-ink-2"
+                data-i18n="com3_d"
+              ></p>
+            </div>
+          </div>
+
+          <p
+            class="rv mt-[clamp(30px,5vh,48px)] max-w-[72ch] font-serif text-[clamp(15px,3.8vw,17.5px)] leading-[1.8] text-ink-2"
+            data-i18n="about_body3"
+          ></p>
+
+          <dl
+            class="rv mt-[clamp(30px,5vh,48px)] grid grid-cols-2 gap-[22px] border-t border-line-soft pt-6 sm:grid-cols-4"
+          >
+            <div>
+              <dt
+                class="text-[10px] font-medium uppercase tracking-[.2em] text-gold"
+                data-i18n="meta_team"
+              >
+                TEAM
+              </dt>
+              <dd
+                class="mt-2 font-serif text-[16px] text-ink"
+                data-i18n="meta_team_v"
+              ></dd>
+            </div>
+            <div>
+              <dt
+                class="text-[10px] font-medium uppercase tracking-[.2em] text-gold"
+                data-i18n="meta_company"
+              >
+                COMPANY
+              </dt>
+              <dd
+                class="mt-2 font-serif text-[16px] text-ink"
+                data-i18n="meta_company_v"
+              ></dd>
+            </div>
+            <div>
+              <dt
+                class="text-[10px] font-medium uppercase tracking-[.2em] text-gold"
+                data-i18n="meta_disciplines"
+              >
+                DISCIPLINES
+              </dt>
+              <dd
+                class="mt-2 font-serif text-[16px] text-ink"
+                data-i18n="meta_disciplines_v"
+              ></dd>
+            </div>
+            <div>
+              <dt
+                class="text-[10px] font-medium uppercase tracking-[.2em] text-gold"
+                data-i18n="meta_works"
+              >
+                SHIPPED WORKS
+              </dt>
+              <dd
+                class="mt-2 font-serif text-[16px] text-ink"
+                data-i18n="meta_works_v"
+              ></dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ============ MEMBER MODAL (≈80% of the viewport) ============ -->
+      <div
+        id="memberModal"
+        class="fixed inset-0 z-[80] hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mmTitle"
+      >
+        <div
+          id="mmBackdrop"
+          class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        ></div>
+        <div
+          class="absolute left-1/2 top-1/2 flex h-[80vh] w-[80vw] max-h-[860px] max-w-[1080px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-panel shadow-2xl"
+        >
+          <div
+            class="flex shrink-0 items-start justify-between gap-4 border-b border-line-soft px-5 py-4 sm:px-8 sm:py-5"
+          >
+            <div>
+              <p id="mmRank" class="label text-gold"></p>
+              <h2
+                id="mmTitle"
+                class="mt-1.5 font-serif text-[clamp(22px,3vw,34px)] leading-tight text-ink"
+              ></h2>
+              <p
+                id="mmRole"
+                class="mt-1.5 font-serif text-[clamp(14px,2.6vw,17px)] text-ink-2"
+              ></p>
+            </div>
+            <button
+              id="mmClose"
+              type="button"
+              class="icon-btn"
+              aria-label="Close profile"
+              data-i18n-aria="modal_close"
+            >
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                aria-hidden="true"
+              >
+                <path d="M3 3l10 10M13 3L3 13" />
+              </svg>
+            </button>
+          </div>
+
+          <div
+            class="grid flex-1 gap-6 overflow-y-auto p-5 sm:p-8 md:grid-cols-[min(280px,32%)_1fr] md:gap-10"
+          >
+            <div class="md:sticky md:top-0 md:self-start">
+              <img
+                id="mmImg"
+                class="aspect-[3/4] w-full rounded-xl border border-line object-cover object-top"
+                src=""
+                alt=""
+              />
+              <p id="mmCard" class="label mt-4 text-gold-soft"></p>
+            </div>
+            <div class="space-y-8 pb-2">
+              <div>
+                <p class="label flex items-center gap-3.5 text-gold">
+                  <span data-i18n="modal_about">ABOUT</span><i class="rule"></i>
+                </p>
+                <p
+                  id="mmAbout"
+                  class="mt-3 font-serif text-[clamp(15.5px,2.8vw,17.5px)] leading-[1.8] text-ink-2"
+                ></p>
+              </div>
+              <div>
+                <p class="label flex items-center gap-3.5 text-gold">
+                  <span data-i18n="modal_expertise">EXPERTISE</span
+                  ><i class="rule"></i>
+                </p>
+                <div id="mmTech" class="mt-3 flex flex-wrap gap-2"></div>
+              </div>
+              <div>
+                <p class="label flex items-center gap-3.5 text-gold">
+                  <span data-i18n="modal_works">SELECTED WORKS</span
+                  ><i class="rule"></i>
+                </p>
+                <div id="mmWorks" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Fills and opens the member modal. Called from the team cards and the work slides.
+        (function () {
+          "use strict";
+          var P = window.POLARIS;
+          var modal = document.getElementById("memberModal");
+          var current = null;
+          var opener = null;
+
+          function fill(id) {
+            var m = P.member(id);
+            if (!m) return false;
+            current = id;
+            document.getElementById("mmRank").textContent = m.rank;
+            document.getElementById("mmTitle").textContent = m.card;
+            document.getElementById("mmRole").textContent =
+              m.name + " — " + P.pick(m.role);
+            var img = document.getElementById("mmImg");
+            img.src = m.i;
+            img.alt = m.card;
+            document.getElementById("mmCard").textContent = m.card;
+            document.getElementById("mmAbout").textContent = P.pick(m.about);
+            var tech = document.getElementById("mmTech");
+            tech.innerHTML = "";
+            m.tech.forEach(function (techName) {
+              tech.appendChild(P.el("span", "chip", techName));
+            });
+            var works = document.getElementById("mmWorks");
+            works.innerHTML = "";
+            var list = P.worksOf(id);
+            if (!list.length) {
+              works.appendChild(
+                P.el(
+                  "p",
+                  "font-serif text-[14.5px] leading-[1.7] text-ink-2",
+                  P.t("modal_more"),
+                ),
+              );
+            }
+            list.forEach(function (w) {
+              var row = P.el(
+                w.url ? "a" : "div",
+                "flex items-baseline justify-between gap-4 border-t border-line-soft py-4 transition-all duration-500 last:border-b hover:ps-2.5",
+              );
+              if (w.url) {
+                row.href = w.url;
+                row.target = "_blank";
+                row.rel = "noopener noreferrer";
+                row.setAttribute(
+                  "aria-label",
+                  P.t("visit_project") + ": " + P.pick(w.n),
+                );
+              }
+              var left = P.el("div");
+              left.appendChild(
+                P.el(
+                  "h4",
+                  "font-serif text-[18px] font-semibold text-ink",
+                  P.pick(w.n),
+                ),
+              );
+              left.appendChild(
+                P.el(
+                  "p",
+                  "mt-1.5 text-[13.5px] leading-[1.6] text-ink-2",
+                  P.pick(w.d),
+                ),
+              );
+              row.appendChild(left);
+              row.appendChild(
+                P.el(
+                  "span",
+                  "shrink-0 text-[10px] font-medium uppercase tracking-[.18em] text-gold-soft",
+                  w.c
+                    .map(function (c) {
+                      return P.catLabel(c);
+                    })
+                    .join(" · "),
+                ),
+              );
+              works.appendChild(row);
+            });
+            return true;
+          }
+
+          function openMember(id) {
+            if (!fill(id)) return false;
+            opener = document.activeElement;
+            modal.classList.remove("hidden");
+            document.documentElement.classList.add("overflow-hidden");
+            modal.setAttribute("tabindex", "-1");
+            modal.focus({ preventScroll: true });
+            restoreHash =
+              location.hash && location.hash.indexOf("#member/") !== 0
+                ? location.hash
+                : "#members";
+            history.replaceState(null, "", "#member/" + id);
+            return true;
+          }
+          function closeMember() {
+            if (modal.classList.contains("hidden")) return false;
+            modal.classList.add("hidden");
+            document.documentElement.classList.remove("overflow-hidden");
+            history.replaceState(null, "", restoreHash || "#members");
+            if (opener && opener.focus) {
+              try {
+                opener.focus({ preventScroll: true });
+              } catch (_) {}
+            }
+            current = null;
+            return true;
+          }
+          var restoreHash = "#members";
+
+          document
+            .getElementById("mmClose")
+            .addEventListener("click", closeMember);
+          document
+            .getElementById("mmBackdrop")
+            .addEventListener("click", closeMember);
+
+          P.onRender(function () {
+            if (current) fill(current); // refresh the open modal after a language switch
+          });
+          P.openMember = openMember;
+          P.closeMember = closeMember;
+        })();
+      </script>
+
+      <footer
+        class="border-t border-line-soft px-[clamp(2rem,5vw,3rem)] py-[clamp(2rem,5vw,3rem)] text-center"
+      >
+        <div class="flex items-center justify-center gap-3">
+          <svg
+            class="h-6 w-6 shrink-0 text-gold"
+            viewBox="0 0 32 32"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M16 1.6 18.9 12l10.4 4-10.4 4L16 30.4 13.1 20 2.7 16l10.4-4z"
+            />
+          </svg>
+          <span class="font-serif tracking-[.42em] text-ink">POLARIS</span>
+        </div>
+        <p
+          id="footFine"
+          class="mt-5 text-[11px] tracking-[.12em] text-ink-2 opacity-60"
+        ></p>
+      </footer>
+    </div>
+
+    <!--
+      Page-wide wiring only: texts, language, theme, header, drawer, scroll spy.
+      Everything section-specific lives in the scripts next to each section.
+    -->
+    <script>
+      (function () {
+        "use strict";
+        var P = window.POLARIS;
+
+        /* ---------------- texts ---------------- */
+        function applyTexts() {
+          [].forEach.call(
+            document.querySelectorAll("[data-i18n]"),
+            function (node) {
+              var key = node.getAttribute("data-i18n");
+              if (P.t(key) != null) node.textContent = P.t(key);
+            },
+          );
+          [].forEach.call(
+            document.querySelectorAll("[data-i18n-aria]"),
+            function (node) {
+              var key = node.getAttribute("data-i18n-aria");
+              if (P.t(key) != null) node.setAttribute("aria-label", P.t(key));
+            },
+          );
+          [].forEach.call(
+            document.querySelectorAll("[data-i18n-alt]"),
+            function (node) {
+              node.alt = P.t(node.getAttribute("data-i18n-alt"));
+            },
+          );
+          document.getElementById("footFine").textContent =
+            "© " + new Date().getFullYear() + " " + P.t("foot_tag");
+        }
+
+        /* ---------------- language ---------------- */
+        var langOpen = false;
+        var langMenu = document.getElementById("langMenu");
+        var langBtn = document.getElementById("langBtn");
+        function toggleLang(open) {
+          langOpen = open;
+          langMenu.classList.toggle("hidden", !open);
+          langMenu.classList.toggle("flex", open);
+          langMenu.setAttribute("aria-hidden", open ? "false" : "true");
+          langBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        function setLang(lang, save) {
+          P.setLang(lang);
+          langBtn.textContent = P.state.lang.toUpperCase();
+          [].forEach.call(langMenu.querySelectorAll("button"), function (b) {
+            b.classList.toggle(
+              "is-on",
+              b.getAttribute("data-lang") === P.state.lang,
+            );
+          });
+          applyTexts();
+          P.renderAll(); // team grid, works slider and the open modal re-render
+          if (save) {
+            try {
+              localStorage.setItem("polaris-lang", P.state.lang);
+            } catch (_) {}
+          }
+        }
+
+        langBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleLang(!langOpen);
+        });
+        langMenu.addEventListener("click", function (e) {
+          var b = e.target.closest("button[data-lang]");
+          if (!b) return;
+          setLang(b.getAttribute("data-lang"), true);
+          toggleLang(false);
+        });
+        document.addEventListener("click", function (e) {
+          if (
+            langOpen &&
+            !e.target.closest("#langMenu") &&
+            !e.target.closest("#langBtn")
+          )
+            toggleLang(false);
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            if (langOpen) {
+              toggleLang(false);
+              langBtn.focus();
+            } else {
+              P.closeMember();
+            }
+          }
+        });
+
+        /* ---------------- theme ---------------- */
+        function applyTheme(value) {
+          document.documentElement.setAttribute("data-theme", value);
+          document
+            .getElementById("themeBtn")
+            .setAttribute("aria-pressed", value === "light" ? "true" : "false");
+          try {
+            localStorage.setItem("polaris-theme", value);
+          } catch (_) {}
+        }
+        document
+          .getElementById("themeBtn")
+          .addEventListener("click", function () {
+            applyTheme(
+              document.documentElement.getAttribute("data-theme") === "light"
+                ? "dark"
+                : "light",
+            );
+          });
+
+        /* ---------------- header & drawer ---------------- */
+        var hdr = document.getElementById("hdr");
+        var drawer = document.getElementById("drawer");
+        var burger = document.getElementById("burger");
+        var drawerOpen = false;
+
+        function onScroll() {
+          hdr.setAttribute(
+            "data-stuck",
+            window.pageYOffset > 24 ? "true" : "false",
+          );
+        }
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+
+        function setActive(hash) {
+          [].forEach.call(document.querySelectorAll(".nav-link"), function (a) {
+            a.classList.toggle("is-on", a.getAttribute("href") === "#" + hash);
+          });
+        }
+        document.querySelectorAll("#hdr, #drawer").forEach(function (node) {
+          node.addEventListener("click", function (e) {
+            var a = e.target.closest("a[data-nav]");
+            if (a) setDrawer(false);
+          });
+        });
+
+        function setDrawer(open) {
+          drawerOpen = open;
+          document.documentElement.classList.toggle("overflow-hidden", open);
+          drawer.classList.toggle("hidden", !open);
+          drawer.classList.toggle("flex", open);
+          burger.setAttribute("aria-expanded", open ? "true" : "false");
+          burger
+            .querySelector('[data-icon="open"]')
+            .classList.toggle("hidden", open);
+          burger
+            .querySelector('[data-icon="close"]')
+            .classList.toggle("hidden", !open);
+        }
+        burger.addEventListener("click", function () {
+          setDrawer(!drawerOpen);
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && drawerOpen) {
+            setDrawer(false);
+            burger.focus();
+          }
+        });
+
+        /* ---------------- member hash links & scroll spy ---------------- */
+        function route() {
+          var h = location.hash.replace(/^#/, "");
+          var id =
+            h.indexOf("member/") === 0 ? h.slice("member/".length) : null;
+          if (id && P.member(id)) {
+            P.openMember(id);
+            return;
+          }
+          P.closeMember();
+          setActive(h || "home");
+        }
+        window.addEventListener("hashchange", route);
+
+        if ("IntersectionObserver" in window) {
+          var spy = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting)
+                  setActive(
+                    entry.target.id === "home" ? "home" : entry.target.id,
+                  );
+              });
+            },
+            { rootMargin: "-45% 0px -50% 0px", threshold: 0 },
+          );
+          ["home", "members", "works", "about"].forEach(function (sid) {
+            var s = document.getElementById(sid);
+            if (s) spy.observe(s);
+          });
+        }
+
+        /* ---------------- boot ---------------- */
+        var savedLang = null;
+        var savedTheme = null;
+        try {
+          savedLang = localStorage.getItem("polaris-lang");
+          savedTheme = localStorage.getItem("polaris-theme");
+        } catch (_) {}
+        applyTheme(
+          savedTheme ||
+            (window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark"),
+        );
+        setLang(savedLang || (navigator.language || "en").slice(0, 2), false);
+        P.observe(document);
+        setActive("home");
+        route();
+
+        var riT;
+        window.addEventListener(
+          "resize",
+          function () {
+            clearTimeout(riT);
+            riT = setTimeout(function () {
+              var W = window.__cupsWorks;
+              if (W) {
+                W.stopAuto();
+                W.startAuto();
+              }
+            }, 150);
+          },
+          { passive: true },
+        );
+      })();
+    </script>
+  </body>
+</html>
